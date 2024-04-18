@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css" />
+    <title>ChatApp</title>
+</head>
+<body>
+    <%- include('partials/userNavbar', {page: ''}); %>
+    <div class="min-h-screen">
+        <div id="chat-messages">
+            <% messages.forEach(function(ele) { %> 
+                <% if (ele.from == session.user) { %>
+                    <div class="chat chat-end">
+                        <div class="chat-bubble chat-bubble-info"><%= ele.msg %></div>
+                    </div>
+                <% } else { %>
+                    <div class="chat chat-start">
+                        <div class="chat-bubble chat-bubble-info"><%= ele.msg %></div>
+                    </div>
+                <% } %>
+            <% }); %>
+        </div>
+        <div class="sticky top-[100vh] flex flex-wrap flex-row justify-center">
+            <form id="chat-form" class="join">
+                <input id='chat-box' name="username" class="input input-bordered join-item" placeholder="Message"/>
+                <button class="btn join-item rounded-r-full bg-black text-white" type="submit">Message</button>
+            </form>
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let socket = io({
+            "query": {
+                "user": '<%= session.user %>',
+                "friend": '<%= to %>'
+            }
+        });
+
+        let form = document.getElementById('chat-form');
+        let input = document.getElementById('chat-box');
+        let messages = document.getElementById('chat-messages');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            if (input.value) {
+                socket.emit('chat-message', input.value, Date.now(), '<%= session.user %>', '<%= to %>');
+                input.value = '';
+            }
+        });
+
+        socket.on('message-received', (msg, from) => {
+            let chat = document.createElement('div');
+            let chatbox = document.createElement('div');
+            if (from == '<%= session.user %>') {
+                chat.classList = "chat chat-end";
+            } else {
+                chat.classList = "chat chat-start";
+            }
+            chatbox.innerHTML = msg;
+            chatbox.classList = "chat-bubble chat-bubble-info";
+            chat.appendChild(chatbox);
+            messages.appendChild(chat);
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+
+        socket.on('error', (err) => {
+            console.log(err);
+        });
+        
+    </script>
+</body>
+</html>

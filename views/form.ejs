@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css" />
+    <title>ChatApp</title>
+</head>
+<body>
+    <% if (session.user)  { %> 
+        <%- include('partials/userNavbar', {page: action}) %>
+    <% } else { %>
+        <%- include('partials/navbar', {page: action}) %>
+    <% } %>
+    <div class="flex flex-wrap flex-row justify-center">
+        <form action="<%= action %>" method="post" class="join">
+            <input name="username" class="input input-bordered join-item" placeholder="Username"/>
+            <button class="btn join-item rounded-r-full bg-black text-white" type="submit">
+                <%= action == '/login'? 'LogIn': (action == '/signup'? 'Join': 'Add Contact') %>
+            </button>
+        </form>
+    </div>
+</body>
+</html>
