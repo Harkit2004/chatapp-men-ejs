@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css" />
+    <title>ChatApp</title>
+</head>
+<body>
+    <%- include('partials/userNavbar', {page: action}) %>
+    <div class="flex flex-wrap flex-row justify-center">
+        <form action="<%= action %>" method="post" class="flex flex-col flex-wrap gap-2">
+            <div id="grpName"></div>
+            <div id='userList' class="flex flex-col flex-wrap gap-2">
+                <select name="user-1" id="user-1" class="select select-bordered w-full max-w-xs">
+                    <option disabled selected>Add User</option>
+                    <% if (users) { %>
+                        <% JSON.parse(users).forEach(user => { %>
+                            <option value="<%= user._id %>"><%= user.name %></option>
+                        <% }) %>
+                    <% } %>
+                </select>
+            </div>
+            <button type="button" class="btn bg-black text-white" onclick="addSelect()">Add More Users</button>
+            <button class="btn bg-black text-white" type="submit">
+                Make the Group
+            </button>
+        </form>
+    </div>
+    <script>
+        const addSelect = (users) => {
+            try {
+                let str = '<%= users %>';
+                let userList = JSON.parse(str.replace(/&#34;/ig,'"'));
+                // console.log(userList);
+                let div = document.getElementById('userList');
+                console.log(div.children);
+                let maxid = Math.max(...Array.from(div.children).map(ele => parseInt(ele.id.split('-')[1])));
+                // console.log(maxid, div, userList);
+                if (maxid === 1) {
+                    let namediv = document.getElementById('grpName');
+                    namediv.innerHTML += '<input name="grp-name" class="input input-bordered" placeholder="Enter Group Name"/>';
+                }
+                let select = document.createElement('select');
+                select.classList = "select select-bordered w-full max-w-xs";
+                select.name = "user-" + ++maxid;  
+                select.id = "user-" + maxid;
+                select.innerHTML += '<option disabled selected>Add User</option>';
+                userList.forEach(ele => {
+                    let option = document.createElement('option');
+                    option.value = ele._id;
+                    option.innerHTML = ele.name; 
+                    select.appendChild(option);
+                });
+                div.appendChild(select);
+            } 
+            catch(err) {
+                console.log(err);
+            }
+        }
+    </script>
+</body>
+</html>

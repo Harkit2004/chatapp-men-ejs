@@ -16,9 +16,9 @@
                 </tr>
             </thead>
             <tbody>
-                <% cont.forEach(ele => { %>
+                <% rooms.forEach(ele => { %>
                     <tr>
-                        <td><a href="/user/chatRoom/<%= ele[0]._id %>"><%= ele[0].name %></a></td>
+                        <td><a href="/user/chatRoom/<%= ele._id %>"><%= ele.name %></a></td>
                     </tr>
                 <% }); %> 
             </tbody>

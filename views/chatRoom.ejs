@@ -13,10 +13,18 @@
             <% messages.forEach(function(ele) { %> 
                 <% if (ele.from == session.user) { %>
                     <div class="chat chat-end">
+                        <div class="chat-header">
+                            <%= ele.name %>
+                            <time class="text-xs opacity-50"><%= ele.time.toLocaleString('en-GB', { timeZone: 'UTC' }) %></time>
+                        </div>
                         <div class="chat-bubble chat-bubble-info"><%= ele.msg %></div>
                     </div>
                 <% } else { %>
                     <div class="chat chat-start">
+                        <div class="chat-header">
+                            <%= ele.name %>
+                            <time class="text-xs opacity-50"><%= ele.time.toLocaleString('en-GB', { timeZone: 'UTC' }) %></time>
+                        </div>
                         <div class="chat-bubble chat-bubble-info"><%= ele.msg %></div>
                     </div>
                 <% } %>
@@ -34,7 +42,7 @@
         let socket = io({
             "query": {
                 "user": '<%= session.user %>',
-                "friend": '<%= to %>'
+                "room": '<%= to %>'
             }
         });
 
@@ -45,12 +53,12 @@
         form.addEventListener('submit', e => {
             e.preventDefault();
             if (input.value) {
-                socket.emit('chat-message', input.value, Date.now(), '<%= session.user %>', '<%= to %>');
+                socket.emit('chat-message', input.value, Date.now());
                 input.value = '';
             }
         });
 
-        socket.on('message-received', (msg, from) => {
+        socket.on('message-received', (msg, from, name) => {
             let chat = document.createElement('div');
             let chatbox = document.createElement('div');
             if (from == '<%= session.user %>') {
@@ -58,7 +66,8 @@
             } else {
                 chat.classList = "chat chat-start";
             }
-            chatbox.innerHTML = msg;
+            chat.innerHTML += '<div class="chat-header">' + name + '<time class="text-xs opacity-50">' + msg.time.toLocaleString('en-GB', { timeZone: 'UTC' }) + '</time></div>';
+            chatbox.innerHTML = msg.msg;
             chatbox.classList = "chat-bubble chat-bubble-info";
             chat.appendChild(chatbox);
             messages.appendChild(chat);
