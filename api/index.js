@@ -1,5 +1,5 @@
 require('dotenv').config()
-const dbOps = require("./modules/dbOprations")
+const dbOps = require("../modules/dbOprations")
 const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
@@ -185,3 +185,5 @@ dbOps.connect().then(() => {
 }).catch(err => {
     console.log(err);
 });
+
+module.exports = app;
