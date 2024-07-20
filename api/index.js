@@ -61,7 +61,7 @@ app.use(express.static(path.join(__dirname, "../public")));
 app.use(
     clientSessions({
         cookieName: 'session', // this is the object name that will be added to 'req'
-        secret: 'o6LjQ5EVNC28ZgK64hDELM18ScpFQr', // this should be a long un-guessable string.
+        secret: process.env.SECRET, // this should be a long un-guessable string.
         duration: 7 * 24 * 60 * 60 * 1000, // duration of the session is a week
         activeDuration: 1000 * 60 * 60, // the session will be extended by 1 hour
     })
