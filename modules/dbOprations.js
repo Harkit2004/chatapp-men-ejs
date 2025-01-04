@@ -2,11 +2,18 @@ require('dotenv').config()
 const mongoose = require("mongoose");
 let Schema = mongoose.Schema;
 
+const emailRegex = /^(([^<>()\[\]\.,;:\s@"]+(\.[^<>()\[\]\.,;:\s@"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
 const UserSchema = new Schema({
     name: {
         type: String,
+        required: true
+    },
+    email: {
+        type: String,
         required: true,
-        unique: true
+        unique: true,
+        match: [emailRegex, 'Please provide a valid email address']
     },
     rooms: [{
         type: Schema.Types.ObjectId, 
@@ -57,10 +64,11 @@ const connect = () => {
     });
 }
 
-const createUser = (userName) => {
+const createUser = (userName, userEmail) => {
     return new Promise((resolve, reject) => {
         User.create({
             name: userName,
+            email: userEmail,
             rooms: []
         }).then(data => {
             resolve(data);
@@ -70,9 +78,9 @@ const createUser = (userName) => {
     });
 }
 
-const userExistByName = (userName) => {
+const userExistByEmail = (userEmail) => {
     return new Promise((resolve, reject) => {
-        User.findOne({name: userName}).then(data => {
+        User.findOne({email: userEmail}).then(data => {
             if (data === null) {
                 reject('User does not exist');
             } else {
@@ -208,4 +216,29 @@ const getUserNameById = (id) => {
     });
 }
 
-module.exports = {connect, createUser, createMessage, userExistByName, getRoom, getRoomMessages, getRoomsByUserId, addRoom, getUsersOtherThanId, getUserNameById};
+// // usr_id: str, room_id: str
+// const getUsersOtherThanCallerOfRoom = (userId, roomId) => {
+//     return new Promise(async (resolve, reject) => {
+//         try {
+//             const room = await Room.findOne({ id: roomId });
+//             const otherUsers = room.members.filter(id => id != userId);
+//             const users = await User.find({ id: { $in: otherUsers }});
+//             resolve(users);
+//         } catch (err) {
+//             reject(err);
+//         }
+//     });
+// };
+
+module.exports = {
+    connect, 
+    createUser, 
+    createMessage, 
+    userExistByEmail, 
+    getRoom, 
+    getRoomMessages, 
+    getRoomsByUserId, 
+    addRoom, 
+    getUsersOtherThanId, 
+    getUserNameById,
+};

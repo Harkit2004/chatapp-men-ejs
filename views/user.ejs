@@ -7,22 +7,35 @@
     <title>ChatApp</title>
 </head>
 <body>
-    <%- include('partials/userNavbar', {page: 'user'}) %>
-    <div class="overflow-x-auto">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% rooms.forEach(ele => { %>
-                    <tr>
-                        <td><a href="/user/chatRoom/<%= ele._id %>"><%= ele.name %></a></td>
-                    </tr>
-                <% }); %> 
-            </tbody>
-        </table>
-    </div>
+    <div class="flex flex-col min-h-screen">
+        <main class="flex-grow">
+            <%- include('partials/userNavbar', {page: 'user'}) %>
+            <div class="overflow-x-auto">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% rooms.forEach(ele => { %>
+                            <tr>
+                                <td>
+                                    <a href="/user/chatRoom/<%= ele._id %>">
+                                        <div class="card w-full">
+                                            <div class="card-body items-center text-cente">
+                                                <h2 class="card-title"><%= ele.name %></h2>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </td>
+                            </tr>
+                        <% }); %> 
+                    </tbody>
+                </table>
+            </div>
+        </main>
+        <%- include('partials/footer') %>
+    <div>
 </body>
 </html>

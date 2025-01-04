@@ -7,14 +7,23 @@
     <title>ChatApp</title>
 </head>
 <body>
-    <%- include('partials/navbar', {page: action}) %>
-    <div class="flex flex-wrap flex-row justify-center">
-        <form action="<%= action %>" method="post" class="join">
-            <input name="username" class="input input-bordered join-item" placeholder="Username"/>
-            <button class="btn join-item rounded-r-full bg-black text-white" type="submit">
-                <%= action == '/login'? 'LogIn': 'Join'%>
-            </button>
-        </form>
-    </div>
+    <div class="flex flex-col min-h-screen">
+        <main class="flex-grow">
+            <%- include('partials/navbar', {page: action}) %>
+            <br />
+            <div class="flex flex-wrap flex-row justify-center w-full">
+                <form action="<%= action %>" method="post" class="flex flex-wrap flex-col justify-center gap-2">
+                    <% if (action === "/signup") { %>
+                        <input name="username" type="text" class="input input-bordered" placeholder="Username"/>    
+                    <% } %>
+                    <input name="email" type="email" class="input input-bordered" placeholder="abc@example.com"/>
+                    <button class="btn rounded-3xl bg-black text-white" type="submit">
+                        <%= action == '/login'? 'LogIn': 'Join'%>
+                    </button>
+                </form>
+            </div>
+        </main>
+        <%- include('partials/footer') %>
+    <div>
 </body>
 </html>

@@ -4,33 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="/css/index.css" />
     <title>ChatApp</title>
 </head>
 <body>
-    <%- include('partials/userNavbar', {page: ''}); %>
+    <%- include('partials/userNavbar', {page: 'chat-room'}); %>
+
+    <dialog id="video_call" class="modal">
+        <div class="modal-box w-8/12 max-w-4xl">
+            <h3 class="text-lg font-bold mb-3">Video Call</h3>
+            <div id="videos" class="flex flex-wrap gap-2">
+
+            </div>
+            <div class="modal-action gap-2">
+                <button id ="toggle-mic" class="btn">Mic</button>
+                <button id ="toggle-camera" class="btn">Camera</button>
+                <form id="hang-up" method="dialog">
+                <!-- if there is a button in form, it will close the modal -->
+                    <button type="submit" class="btn" onclick="video_call.close()">Hang Up</button>
+                </form>
+            </div>
+        </div>
+    </dialog>
+
     <div class="min-h-screen">
+        
         <div id="chat-messages">
             <% messages.forEach(function(ele) { %> 
                 <% if (ele.from == session.user) { %>
                     <div class="chat chat-end">
-                        <div class="chat-header">
+                        <div class="chat-header -z-10">
                             <%= ele.name %>
                             <time class="text-xs opacity-50"><%= ele.time.toLocaleString('en-GB', { timeZone: 'UTC' }) %></time>
                         </div>
-                        <div class="chat-bubble chat-bubble-info"><%= ele.msg %></div>
+                        <div class="chat-bubble chat-bubble-info -z-10"><%= ele.msg %></div>
                     </div>
                 <% } else { %>
                     <div class="chat chat-start">
-                        <div class="chat-header">
+                        <div class="chat-header -z-10">
                             <%= ele.name %>
                             <time class="text-xs opacity-50"><%= ele.time.toLocaleString('en-GB', { timeZone: 'UTC' }) %></time>
                         </div>
-                        <div class="chat-bubble chat-bubble-info"><%= ele.msg %></div>
+                        <div class="chat-bubble chat-bubble-info -z-10"><%= ele.msg %></div>
                     </div>
                 <% } %>
             <% }); %>
         </div>
-        <div class="sticky top-[100vh] flex flex-wrap flex-row justify-center">
+        <div class="sticky top-[90vh] flex flex-wrap flex-row justify-center">
             <form id="chat-form" class="join">
                 <input id='chat-box' name="username" class="input input-bordered join-item" placeholder="Message"/>
                 <button class="btn join-item rounded-r-full bg-black text-white" type="submit">Message</button>
@@ -39,45 +59,10 @@
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        let socket = io({
-            "query": {
-                "user": '<%= session.user %>',
-                "room": '<%= to %>'
-            }
-        });
-
-        let form = document.getElementById('chat-form');
-        let input = document.getElementById('chat-box');
-        let messages = document.getElementById('chat-messages');
-
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-            if (input.value) {
-                socket.emit('chat-message', input.value, Date.now());
-                input.value = '';
-            }
-        });
-
-        socket.on('message-received', (msg, from, name) => {
-            let chat = document.createElement('div');
-            let chatbox = document.createElement('div');
-            if (from == '<%= session.user %>') {
-                chat.classList = "chat chat-end";
-            } else {
-                chat.classList = "chat chat-start";
-            }
-            chat.innerHTML += '<div class="chat-header">' + name + '<time class="text-xs opacity-50">' + msg.time.toLocaleString('en-GB', { timeZone: 'UTC' }) + '</time></div>';
-            chatbox.innerHTML = msg.msg;
-            chatbox.classList = "chat-bubble chat-bubble-info";
-            chat.appendChild(chatbox);
-            messages.appendChild(chat);
-            window.scrollTo(0, document.body.scrollHeight);
-        });
-
-        socket.on('error', (err) => {
-            console.log(err);
-        });
-        
+        const userId = '<%= session.user %>';
+        const roomId = '<%= to %>';
     </script>
+    <script src="/AgoraRTC_N-4.23.0.js">s</script>
+    <script src="/client.js"></script>
 </body>
 </html>

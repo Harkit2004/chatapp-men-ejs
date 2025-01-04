@@ -1,11 +1,12 @@
 require('dotenv').config()
-const dbOps = require("../modules/dbOprations")
+const dbOps = require("../modules/dbOprations");
 const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
 const clientSessions = require('client-sessions');
-const {createServer} = require("http");
+const { createServer } = require("http");
 const { Server } = require('socket.io');
+const cors = require(cors);
 
 const app = express();
 const server = createServer(app);
@@ -56,6 +57,8 @@ app.set("views", path.join(__dirname, "../views"));
 
 app.set('view engine', 'ejs');
 
+app.use(cors());
+
 app.use(express.static(path.join(__dirname, "../public")));
 
 app.use(
@@ -104,10 +107,9 @@ app.get('/logout', userLoggedIn, (req, res) => {
     res.redirect("/");
 });
 
-//
 app.get('/user/chatRoom/:roomId', userLoggedIn, (req, res) => {
     dbOps.getRoomMessages(req.params.roomId).then(messages => {
-        console.log(messages);
+        // console.log(messages);
         res.render('chatRoom', {messages, to: req.params.roomId});
     }).catch(err => {
         res.redirect('/error?status=500&msg=' + err);
@@ -156,7 +158,7 @@ app.post('/user/addContacts', userLoggedIn, (req, res) => {
 });
 
 app.post('/login', userNotLoggedIn, (req, res) => {
-    dbOps.userExistByName(req.body.username).then(data => {
+    dbOps.userExistByEmail(req.body.email).then(data => {
         req.session.user = data._id;
         res.redirect(`/user`);
     }).catch(err => {
@@ -165,8 +167,8 @@ app.post('/login', userNotLoggedIn, (req, res) => {
 });
 
 app.post('/signup', userNotLoggedIn, (req, res) => {
-    if (req.body.username && req.body.username != "") {
-        dbOps.createUser(req.body.username).then(data => {
+    if (req.body.username && req.body.username != "" && req.body.email && req.body.email != "") {
+        dbOps.createUser(req.body.username, req.body.email).then(data => {
             req.session.user = data._id;
             res.redirect(`/user`);
         }).catch(err => {
