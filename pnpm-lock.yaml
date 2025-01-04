@@ -17,6 +17,9 @@ importers:
       client-sessions:
         specifier: ^0.8.0
         version: 0.8.0
+      cors:
+        specifier: ^2.8.5
+        version: 2.8.5
       daisyui:
         specifier: ^4.7.3
         version: 4.12.10(postcss@8.4.39)
